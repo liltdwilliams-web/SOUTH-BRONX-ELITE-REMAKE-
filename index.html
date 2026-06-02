@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>THA RAQ LIFE - TRENCHES</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar">
+        <div class="container">
+            <div class="nav-content">
+                <h1 class="logo">THA RAQ LIFE</h1>
+                <p class="tagline">TRENCHES</p>
+            </div>
+            <ul class="nav-links">
+                <li><a href="#home">Home</a></li>
+                <li><a href="#shop">Shop</a></li>
+                <li><a href="#discord">Discord</a></li>
+                <li><a href="#contact">Contact</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section class="hero" id="home">
+        <div class="hero-content">
+            <h2>Welcome to THA RAQ LIFE</h2>
+            <p>TRENCHES - Exclusive Gear & Customization</p>
+            <a href="#shop" class="cta-button">Shop Now</a>
+        </div>
+    </section>
+
+    <!-- Shop Section -->
+    <section class="shop" id="shop">
+        <div class="container">
+            <h2 class="section-title">Our Products</h2>
+            
+            <div class="products-grid">
+                <!-- Product 1: Custom Price -->
+                <div class="product-card">
+                    <div class="product-image custom-price">
+                        <span class="product-type">CUSTOM PRICE</span>
+                    </div>
+                    <h3>Custom Price</h3>
+                    <p class="description">Get custom pricing for exclusive items and special requests.</p>
+                    <div class="price">$10.00</div>
+                    <button class="buy-button" onclick="addToCart('Custom Price', 10)">Add to Cart</button>
+                </div>
+
+                <!-- Product 2: Turfs -->
+                <div class="product-card">
+                    <div class="product-image turfs">
+                        <span class="product-type">TURFS</span>
+                    </div>
+                    <h3>Turfs</h3>
+                    <p class="description">Premium turf gear and territory packages for your collection.</p>
+                    <div class="price">$20.00</div>
+                    <button class="buy-button" onclick="addToCart('Turfs', 20)">Add to Cart</button>
+                </div>
+
+                <!-- Product 3: Custom Guns -->
+                <div class="product-card">
+                    <div class="product-image custom-guns">
+                        <span class="product-type">CUSTOM GUNS</span>
+                    </div>
+                    <h3>Custom Guns</h3>
+                    <p class="description">Exclusive custom weapon designs and configurations.</p>
+                    <div class="price">$30.00</div>
+                    <button class="buy-button" onclick="addToCart('Custom Guns', 30)">Add to Cart</button>
+                </div>
+            </div>
+
+            <!-- Cart Section -->
+            <div class="cart-section">
+                <h3>Your Cart</h3>
+                <div id="cart-items" class="cart-items">
+                    <p class="empty-cart">Your cart is empty</p>
+                </div>
+                <div class="cart-total">
+                    <strong>Total: $<span id="total-price">0.00</span></strong>
+                </div>
+                <button class="checkout-button" onclick="checkout()">Proceed to Checkout</button>
+                <button class="clear-cart-button" onclick="clearCart()">Clear Cart</button>
+            </div>
+        </div>
+    </section>
+
+    <!-- Discord Section -->
+    <section class="discord" id="discord">
+        <div class="container">
+            <h2 class="section-title">Join Our Discord</h2>
+            <p>Connect with our community and get exclusive updates</p>
+            <a href="https://discord.gg" class="discord-button" target="_blank">Join Discord Server</a>
+        </div>
+    </section>
+
+    <!-- Contact Section -->
+    <section class="contact" id="contact">
+        <div class="container">
+            <h2 class="section-title">Contact Us</h2>
+            <form class="contact-form">
+                <input type="text" placeholder="Your Name" required>
+                <input type="email" placeholder="Your Email" required>
+                <textarea placeholder="Your Message" rows="5" required></textarea>
+                <button type="submit" class="submit-button">Send Message</button>
+            </form>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <p>&copy; 2026 THA RAQ LIFE - TRENCHES. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <script src="script.js"></script>
+</body>
+</html>
