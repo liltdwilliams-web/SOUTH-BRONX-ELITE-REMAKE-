@@ -1,0 +1,556 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Checkout - Tha Raq Life</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary-color: #FF6B35;
+            --secondary-color: #8b0000;
+            --bg-dark: #0f0f0f;
+            --bg-light: #1c1c1c;
+            --text-light: #ffffff;
+            --text-dark: #000000;
+            --accent-color: #00ff66;
+        }
+
+        body {
+            font-family: 'Arial', sans-serif;
+            background-color: var(--bg-dark);
+            color: var(--text-light);
+        }
+
+        header {
+            background: var(--secondary-color);
+            padding: 2rem 1rem;
+            text-align: center;
+            border-bottom: 2px solid var(--primary-color);
+        }
+
+        header h1 {
+            font-size: 2.5rem;
+            letter-spacing: 2px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 2rem 1rem;
+        }
+
+        .checkout-wrapper {
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: 2rem;
+            margin-top: 2rem;
+        }
+
+        .checkout-form {
+            background-color: var(--bg-light);
+            padding: 2rem;
+            border-radius: 10px;
+            border-left: 4px solid var(--primary-color);
+        }
+
+        .form-section {
+            margin-bottom: 2rem;
+        }
+
+        .form-section h2 {
+            color: var(--primary-color);
+            font-size: 1.3rem;
+            margin-bottom: 1rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: bold;
+            color: var(--accent-color);
+        }
+
+        input, select, textarea {
+            width: 100%;
+            padding: 0.75rem;
+            border: 1px solid #444;
+            border-radius: 5px;
+            background-color: #2C2C2C;
+            color: var(--text-light);
+            font-size: 1rem;
+            font-family: 'Arial', sans-serif;
+        }
+
+        input:focus, select:focus, textarea:focus {
+            outline: none;
+            border-color: var(--primary-color);
+            box-shadow: 0 0 5px rgba(255, 107, 53, 0.3);
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1rem;
+        }
+
+        .full-width {
+            grid-column: 1 / -1;
+        }
+
+        .order-summary {
+            background-color: var(--bg-light);
+            padding: 2rem;
+            border-radius: 10px;
+            border-left: 4px solid var(--accent-color);
+            position: sticky;
+            top: 20px;
+        }
+
+        .order-summary h2 {
+            color: var(--accent-color);
+            font-size: 1.3rem;
+            margin-bottom: 1.5rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .order-items {
+            margin-bottom: 1.5rem;
+            max-height: 300px;
+            overflow-y: auto;
+        }
+
+        .order-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0.75rem;
+            background-color: #2C2C2C;
+            border-left: 3px solid var(--primary-color);
+            margin-bottom: 0.5rem;
+            border-radius: 3px;
+        }
+
+        .item-name {
+            flex: 1;
+            font-weight: bold;
+        }
+
+        .item-price {
+            color: var(--primary-color);
+            font-weight: bold;
+        }
+
+        .order-divider {
+            border-top: 1px solid #444;
+            margin: 1rem 0;
+        }
+
+        .order-total {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: var(--accent-color);
+            margin-top: 1rem;
+        }
+
+        .payment-methods {
+            margin-top: 1.5rem;
+            padding-top: 1.5rem;
+            border-top: 1px solid #444;
+        }
+
+        .payment-option {
+            display: flex;
+            align-items: center;
+            margin-bottom: 1rem;
+            cursor: pointer;
+        }
+
+        .payment-option input[type="radio"] {
+            width: auto;
+            margin-right: 1rem;
+        }
+
+        .button-group {
+            display: flex;
+            gap: 1rem;
+            margin-top: 2rem;
+        }
+
+        .btn {
+            flex: 1;
+            padding: 1rem;
+            font-size: 1rem;
+            font-weight: bold;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            transition: all 0.3s ease;
+        }
+
+        .btn-checkout {
+            background-color: var(--primary-color);
+            color: var(--text-dark);
+        }
+
+        .btn-checkout:hover {
+            background-color: var(--accent-color);
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(255, 107, 53, 0.4);
+        }
+
+        .btn-continue {
+            background-color: #555;
+            color: var(--text-light);
+        }
+
+        .btn-continue:hover {
+            background-color: #777;
+            transform: translateY(-2px);
+        }
+
+        .security-badge {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+            margin-top: 1.5rem;
+            padding: 1rem;
+            background-color: #2C2C2C;
+            border-radius: 5px;
+            font-size: 0.9rem;
+            color: #AAA;
+        }
+
+        .back-link {
+            display: inline-block;
+            margin-bottom: 2rem;
+            color: var(--primary-color);
+            text-decoration: none;
+            font-weight: bold;
+            transition: color 0.3s ease;
+        }
+
+        .back-link:hover {
+            color: var(--accent-color);
+        }
+
+        .error {
+            color: #FF4444;
+            font-size: 0.9rem;
+            margin-top: 0.25rem;
+        }
+
+        .success-message {
+            background-color: var(--accent-color);
+            color: var(--text-dark);
+            padding: 1rem;
+            border-radius: 5px;
+            margin-bottom: 1.5rem;
+            text-align: center;
+            font-weight: bold;
+        }
+
+        @media (max-width: 768px) {
+            .checkout-wrapper {
+                grid-template-columns: 1fr;
+            }
+
+            .order-summary {
+                position: static;
+            }
+
+            .form-row {
+                grid-template-columns: 1fr;
+            }
+
+            header h1 {
+                font-size: 1.8rem;
+            }
+
+            .button-group {
+                flex-direction: column;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>CHECKOUT</h1>
+        <p>Complete Your Order</p>
+    </header>
+
+    <div class="container">
+        <a href="index.html" class="back-link">← Back to Shop</a>
+
+        <div class="checkout-wrapper">
+            <!-- Checkout Form -->
+            <form class="checkout-form" id="checkoutForm" onsubmit="handleCheckout(event)">
+                <!-- Customer Information Section -->
+                <div class="form-section">
+                    <h2>Customer Information</h2>
+                    <div class="form-group">
+                        <label for="email">Email Address *</label>
+                        <input type="email" id="email" name="email" required>
+                    </div>
+                </div>
+
+                <!-- Billing Address Section -->
+                <div class="form-section">
+                    <h2>Billing Address</h2>
+                    <div class="form-group">
+                        <label for="fullname">Full Name *</label>
+                        <input type="text" id="fullname" name="fullname" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="address">Street Address *</label>
+                        <input type="text" id="address" name="address" required>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="city">City *</label>
+                            <input type="text" id="city" name="city" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="state">State/Province *</label>
+                            <input type="text" id="state" name="state" required>
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="zip">Zip Code *</label>
+                            <input type="text" id="zip" name="zip" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="country">Country *</label>
+                            <input type="text" id="country" name="country" required>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Payment Information Section -->
+                <div class="form-section">
+                    <h2>Payment Method</h2>
+                    <div class="payment-methods">
+                        <div class="payment-option">
+                            <input type="radio" id="card" name="paymentMethod" value="card" checked>
+                            <label for="card" style="margin: 0;">Credit/Debit Card</label>
+                        </div>
+                        <div class="payment-option">
+                            <input type="radio" id="paypal" name="paymentMethod" value="paypal">
+                            <label for="paypal" style="margin: 0;">PayPal</label>
+                        </div>
+                        <div class="payment-option">
+                            <input type="radio" id="crypto" name="paymentMethod" value="crypto">
+                            <label for="crypto" style="margin: 0;">Cryptocurrency</label>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Card Payment Section (shown by default) -->
+                <div class="form-section" id="cardSection">
+                    <h2>Card Details</h2>
+                    <div class="form-group">
+                        <label for="cardname">Cardholder Name *</label>
+                        <input type="text" id="cardname" name="cardname">
+                    </div>
+                    <div class="form-group">
+                        <label for="cardnumber">Card Number *</label>
+                        <input type="text" id="cardnumber" name="cardnumber" placeholder="1234 5678 9012 3456" maxlength="19">
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="expiry">Expiry Date *</label>
+                            <input type="text" id="expiry" name="expiry" placeholder="MM/YY" maxlength="5">
+                        </div>
+                        <div class="form-group">
+                            <label for="cvv">CVV *</label>
+                            <input type="text" id="cvv" name="cvv" placeholder="123" maxlength="4">
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Additional Information -->
+                <div class="form-section">
+                    <h2>Order Notes</h2>
+                    <div class="form-group">
+                        <label for="notes">Special Instructions (Optional)</label>
+                        <textarea id="notes" name="notes" rows="3" placeholder="Any special requests or instructions..."></textarea>
+                    </div>
+                </div>
+
+                <!-- Buttons -->
+                <div class="button-group">
+                    <button type="button" class="btn btn-continue" onclick="window.history.back()">Continue Shopping</button>
+                    <button type="submit" class="btn btn-checkout">Place Order</button>
+                </div>
+
+                <!-- Security Badge -->
+                <div class="security-badge">
+                    🔒 Your payment information is secure and encrypted
+                </div>
+            </form>
+
+            <!-- Order Summary Sidebar -->
+            <div class="order-summary">
+                <h2>Order Summary</h2>
+                
+                <div class="order-items" id="orderItems">
+                    <!-- Items will be populated by JavaScript -->
+                    <div class="order-item">
+                        <span class="item-name">Custom Name</span>
+                        <span class="item-price">$10.00</span>
+                    </div>
+                </div>
+
+                <div class="order-divider"></div>
+
+                <div style="display: flex; justify-content: space-between; margin-bottom: 0.5rem;">
+                    <span>Subtotal:</span>
+                    <span id="subtotal">$0.00</span>
+                </div>
+                <div style="display: flex; justify-content: space-between; margin-bottom: 0.5rem;">
+                    <span>Shipping:</span>
+                    <span id="shipping">$0.00</span>
+                </div>
+                <div style="display: flex; justify-content: space-between; margin-bottom: 0.5rem;">
+                    <span>Tax:</span>
+                    <span id="tax">$0.00</span>
+                </div>
+
+                <div class="order-divider"></div>
+
+                <div class="order-total">
+                    <span>Total:</span>
+                    <span id="total">$0.00</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Payment method toggle
+        const paymentMethods = document.querySelectorAll('input[name="paymentMethod"]');
+        const cardSection = document.getElementById('cardSection');
+
+        paymentMethods.forEach(method => {
+            method.addEventListener('change', function() {
+                if (this.value === 'card') {
+                    cardSection.style.display = 'block';
+                    // Make card fields required
+                    document.getElementById('cardname').required = true;
+                    document.getElementById('cardnumber').required = true;
+                    document.getElementById('expiry').required = true;
+                    document.getElementById('cvv').required = true;
+                } else {
+                    cardSection.style.display = 'none';
+                    // Remove required attribute
+                    document.getElementById('cardname').required = false;
+                    document.getElementById('cardnumber').required = false;
+                    document.getElementById('expiry').required = false;
+                    document.getElementById('cvv').required = false;
+                }
+            });
+        });
+
+        // Get cart from localStorage or initialize sample data
+        function loadOrderSummary() {
+            let cart = JSON.parse(localStorage.getItem('cart')) || [];
+            
+            // If cart is empty, show sample item
+            if (cart.length === 0) {
+                cart = [{ id: 1, name: 'Custom Name', price: 10 }];
+            }
+
+            const orderItemsDiv = document.getElementById('orderItems');
+            orderItemsDiv.innerHTML = '';
+
+            let subtotal = 0;
+            cart.forEach(item => {
+                const itemDiv = document.createElement('div');
+                itemDiv.className = 'order-item';
+                itemDiv.innerHTML = `
+                    <span class="item-name">${item.name}</span>
+                    <span class="item-price">$${item.price.toFixed(2)}</span>
+                `;
+                orderItemsDiv.appendChild(itemDiv);
+                subtotal += item.price;
+            });
+
+            // Calculate totals
+            const shipping = subtotal > 0 ? 0 : 0; // Free shipping for now
+            const tax = subtotal * 0.08; // 8% tax
+            const total = subtotal + shipping + tax;
+
+            document.getElementById('subtotal').textContent = `$${subtotal.toFixed(2)}`;
+            document.getElementById('shipping').textContent = `$${shipping.toFixed(2)}`;
+            document.getElementById('tax').textContent = `$${tax.toFixed(2)}`;
+            document.getElementById('total').textContent = `$${total.toFixed(2)}`;
+        }
+
+        // Format card number
+        document.getElementById('cardnumber')?.addEventListener('input', function(e) {
+            let value = e.target.value.replace(/\s/g, '');
+            let formattedValue = value.replace(/(\d{4})/g, '$1 ').trim();
+            e.target.value = formattedValue;
+        });
+
+        // Format expiry date
+        document.getElementById('expiry')?.addEventListener('input', function(e) {
+            let value = e.target.value.replace(/\D/g, '');
+            if (value.length >= 2) {
+                value = value.slice(0, 2) + '/' + value.slice(2, 4);
+            }
+            e.target.value = value;
+        });
+
+        // Handle checkout submission
+        function handleCheckout(e) {
+            e.preventDefault();
+
+            const formData = {
+                email: document.getElementById('email').value,
+                fullname: document.getElementById('fullname').value,
+                address: document.getElementById('address').value,
+                city: document.getElementById('city').value,
+                state: document.getElementById('state').value,
+                zip: document.getElementById('zip').value,
+                country: document.getElementById('country').value,
+                paymentMethod: document.querySelector('input[name="paymentMethod"]:checked').value,
+                total: document.getElementById('total').textContent
+            };
+
+            // Simulate order processing
+            console.log('Order Submitted:', formData);
+            
+            alert(`Thank you for your order!\n\nOrder Total: ${formData.total}\n\nA confirmation email will be sent to ${formData.email}\n\nYour order is being processed.`);
+            
+            // Clear cart and redirect
+            localStorage.removeItem('cart');
+            setTimeout(() => {
+                window.location.href = 'index.html';
+            }, 2000);
+        }
+
+        // Load order summary when page loads
+        document.addEventListener('DOMContentLoaded', loadOrderSummary);
+    </script>
+</body>
+</html>
