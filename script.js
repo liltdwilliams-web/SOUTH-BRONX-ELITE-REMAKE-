@@ -3,6 +3,7 @@ let cart = [];
 
 // Initialize when page loads
 document.addEventListener('DOMContentLoaded', function() {
+    console.log('Page loaded, initializing cart...');
     attachEventListeners();
     loadCartFromStorage();
     updateCart();
@@ -14,33 +15,49 @@ function attachEventListeners() {
     const closeCart = document.getElementById('close-cart');
     const modalOverlay = document.getElementById('modal-overlay');
 
-    cartToggle.addEventListener('click', openCart);
-    closeCart.addEventListener('click', closeCartSidebar);
-    
-    modalOverlay.addEventListener('click', function() {
-        closeCartSidebar();
-    });
+    if (cartToggle) {
+        cartToggle.addEventListener('click', openCart);
+        console.log('Cart toggle attached');
+    }
+    if (closeCart) {
+        closeCart.addEventListener('click', closeCartSidebar);
+        console.log('Close cart button attached');
+    }
+    if (modalOverlay) {
+        modalOverlay.addEventListener('click', function() {
+            closeCartSidebar();
+        });
+    }
 }
 
 // Open cart sidebar
 function openCart() {
+    console.log('Opening cart...');
     const cartSidebar = document.getElementById('cart-sidebar');
-    cartSidebar.classList.add('open');
+    if (cartSidebar) {
+        cartSidebar.classList.add('open');
+        console.log('Cart opened');
+    }
 }
 
 // Close cart sidebar
 function closeCartSidebar() {
+    console.log('Closing cart...');
     const cartSidebar = document.getElementById('cart-sidebar');
-    cartSidebar.classList.remove('open');
+    if (cartSidebar) {
+        cartSidebar.classList.remove('open');
+        console.log('Cart closed');
+    }
 }
 
 // Add to cart
 function addToCart(id, productName, price) {
+    console.log('Adding to cart:', productName, price);
     cart.push({
         id: id,
         name: productName,
         price: price,
-        uniqueId: Date.now()
+        uniqueId: Date.now() + Math.random()
     });
     saveCartToStorage();
     updateCart();
@@ -50,6 +67,7 @@ function addToCart(id, productName, price) {
 
 // Remove from cart
 function removeFromCart(itemId) {
+    console.log('Removing item:', itemId);
     cart = cart.filter(item => item.uniqueId !== itemId);
     saveCartToStorage();
     updateCart();
@@ -57,9 +75,15 @@ function removeFromCart(itemId) {
 
 // Update cart display
 function updateCart() {
+    console.log('Updating cart, items:', cart.length);
     const cartItemsDiv = document.getElementById('cart-items');
     const cartCountSpan = document.getElementById('cart-count');
     const totalPriceSpan = document.getElementById('total-price');
+
+    if (!cartItemsDiv || !cartCountSpan || !totalPriceSpan) {
+        console.error('Cart elements not found!');
+        return;
+    }
 
     cartCountSpan.textContent = cart.length;
 
@@ -122,6 +146,7 @@ function goToCheckout() {
 // Save cart to localStorage
 function saveCartToStorage() {
     localStorage.setItem('cart', JSON.stringify(cart));
+    console.log('Cart saved to storage:', cart);
 }
 
 // Load cart from localStorage
@@ -130,6 +155,7 @@ function loadCartFromStorage() {
     if (savedCart) {
         try {
             cart = JSON.parse(savedCart);
+            console.log('Cart loaded from storage:', cart);
         } catch (e) {
             console.error('Error loading cart from storage:', e);
             cart = [];
@@ -139,6 +165,7 @@ function loadCartFromStorage() {
 
 // Show notification
 function showNotification(message) {
+    console.log('Showing notification:', message);
     const notification = document.createElement('div');
     notification.style.cssText = `
         position: fixed;
