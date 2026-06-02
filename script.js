@@ -1,43 +1,25 @@
 // Cart functionality
 let cart = [];
-let stripe, elements, paymentElement;
 
-// Initialize Stripe - IMPORTANT: Replace with your actual publishable key
-const STRIPE_PUBLISHABLE_KEY = 'pk_test_YOUR_STRIPE_PUBLISHABLE_KEY_HERE';
-
-// Initialize Stripe when page loads
+// Initialize when page loads
 document.addEventListener('DOMContentLoaded', function() {
-    stripe = Stripe(STRIPE_PUBLISHABLE_KEY);
-    initializeStripe();
     attachEventListeners();
+    loadCartFromStorage();
     updateCart();
 });
 
-// Attach event listeners for cart sidebar and modal
+// Attach event listeners for cart sidebar
 function attachEventListeners() {
     const cartToggle = document.getElementById('cart-toggle');
     const closeCart = document.getElementById('close-cart');
-    const closeCheckout = document.querySelector('.close-modal');
     const modalOverlay = document.getElementById('modal-overlay');
 
     cartToggle.addEventListener('click', openCart);
-    closeCart.addEventListener('click', closeCart);
-    
-    if (closeCheckout) {
-        closeCheckout.addEventListener('click', closeCheckoutModal);
-    }
+    closeCart.addEventListener('click', closeCartSidebar);
     
     modalOverlay.addEventListener('click', function() {
-        if (document.getElementById('checkout-modal').classList.contains('show')) {
-            closeCheckoutModal();
-        }
+        closeCartSidebar();
     });
-
-    // Payment form submission
-    const paymentForm = document.getElementById('payment-form');
-    if (paymentForm) {
-        paymentForm.addEventListener('submit', handlePayment);
-    }
 }
 
 // Open cart sidebar
@@ -53,19 +35,23 @@ function closeCartSidebar() {
 }
 
 // Add to cart
-function addToCart(productName, price) {
+function addToCart(id, productName, price) {
     cart.push({
+        id: id,
         name: productName,
         price: price,
-        id: Date.now()
+        uniqueId: Date.now()
     });
+    saveCartToStorage();
     updateCart();
     showNotification(`${productName} added to cart!`);
+    openCart();
 }
 
 // Remove from cart
 function removeFromCart(itemId) {
-    cart = cart.filter(item => item.id !== itemId);
+    cart = cart.filter(item => item.uniqueId !== itemId);
+    saveCartToStorage();
     updateCart();
 }
 
@@ -94,7 +80,7 @@ function updateCart() {
                 </div>
                 <div style="display: flex; align-items: center; gap: 1rem;">
                     <span class="cart-item-price">$${item.price.toFixed(2)}</span>
-                    <button class="remove-item" onclick="removeFromCart(${item.id})">Remove</button>
+                    <button class="remove-item" onclick="removeFromCart(${item.uniqueId})">Remove</button>
                 </div>
             </div>
         `;
@@ -113,126 +99,41 @@ function clearCart() {
     }
     if (confirm('Are you sure you want to clear your cart?')) {
         cart = [];
+        saveCartToStorage();
         updateCart();
         showNotification('Cart cleared!');
     }
 }
 
-// Open checkout modal
-function openCheckout() {
+// Go to checkout page
+function goToCheckout() {
     if (cart.length === 0) {
         showNotification('Your cart is empty!');
         return;
     }
-
-    closeCartSidebar();
-    displayOrderSummary();
     
-    const modal = document.getElementById('checkout-modal');
-    const overlay = document.getElementById('modal-overlay');
+    // Save cart to localStorage for checkout page
+    saveCartToStorage();
     
-    modal.classList.add('show');
-    overlay.classList.add('show');
+    // Redirect to checkout page
+    window.location.href = 'checkout.html';
 }
 
-// Close checkout modal
-function closeCheckoutModal() {
-    const modal = document.getElementById('checkout-modal');
-    const overlay = document.getElementById('modal-overlay');
-    
-    modal.classList.remove('show');
-    overlay.classList.remove('show');
+// Save cart to localStorage
+function saveCartToStorage() {
+    localStorage.setItem('cart', JSON.stringify(cart));
 }
 
-// Display order summary in checkout
-function displayOrderSummary() {
-    const orderItemsDiv = document.getElementById('order-items');
-    const checkoutTotalSpan = document.getElementById('checkout-total');
-
-    let orderHTML = '';
-    let total = 0;
-
-    cart.forEach(item => {
-        orderHTML += `
-            <div class="order-item">
-                <span>${item.name}</span>
-                <span>$${item.price.toFixed(2)}</span>
-            </div>
-        `;
-        total += item.price;
-    });
-
-    orderItemsDiv.innerHTML = orderHTML;
-    checkoutTotalSpan.textContent = total.toFixed(2);
-}
-
-// Initialize Stripe Payment Element
-async function initializeStripe() {
-    try {
-        // Create payment intent on your backend
-        const response = await fetch('/create-payment-intent', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ amount: 0 }) // Will be updated on checkout
-        });
-
-        const { clientSecret } = await response.json();
-
-        elements = stripe.elements({ clientSecret });
-        paymentElement = elements.create('payment');
-        paymentElement.mount('#payment-element');
-    } catch (error) {
-        console.error('Error initializing Stripe:', error);
-    }
-}
-
-// Handle payment
-async function handlePayment(e) {
-    e.preventDefault();
-
-    const total = cart.reduce((sum, item) => sum + item.price, 0);
-    const amount = Math.round(total * 100); // Convert to cents
-
-    try {
-        // Create payment intent with cart total
-        const intentResponse = await fetch('/create-payment-intent', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ amount })
-        });
-
-        const { clientSecret } = await intentResponse.json();
-
-        // Confirm payment
-        const { error, paymentIntent } = await stripe.confirmPayment({
-            elements,
-            clientSecret,
-            redirect: 'if_required'
-        });
-
-        const messageContainer = document.getElementById('payment-message');
-
-        if (error) {
-            messageContainer.textContent = error.message;
-            messageContainer.classList.remove('success');
-        } else if (paymentIntent && paymentIntent.status === 'succeeded') {
-            messageContainer.textContent = 'Payment successful! Thank you for your purchase.';
-            messageContainer.classList.add('success');
-            
-            // Clear cart and close modal after 2 seconds
-            setTimeout(() => {
-                cart = [];
-                updateCart();
-                closeCheckoutModal();
-                showNotification('Order placed successfully!');
-                document.getElementById('payment-form').reset();
-            }, 2000);
+// Load cart from localStorage
+function loadCartFromStorage() {
+    const savedCart = localStorage.getItem('cart');
+    if (savedCart) {
+        try {
+            cart = JSON.parse(savedCart);
+        } catch (e) {
+            console.error('Error loading cart from storage:', e);
+            cart = [];
         }
-    } catch (error) {
-        const messageContainer = document.getElementById('payment-message');
-        messageContainer.textContent = 'Payment failed. Please try again.';
-        messageContainer.classList.remove('success');
-        console.error('Payment error:', error);
     }
 }
 
@@ -260,6 +161,22 @@ function showNotification(message) {
         notification.remove();
     }, 3000);
 }
+
+// Add animation for notifications
+const style = document.createElement('style');
+style.textContent = `
+    @keyframes slideIn {
+        from {
+            transform: translateX(400px);
+            opacity: 0;
+        }
+        to {
+            transform: translateX(0);
+            opacity: 1;
+        }
+    }
+`;
+document.head.appendChild(style);
 
 // Smooth scroll for navigation links
 document.querySelectorAll('a[href^="#"]').forEach(anchor => {
